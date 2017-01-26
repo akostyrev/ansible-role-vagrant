@@ -7,22 +7,28 @@
   changed_when: False
   when: ansible_pkg_mgr == 'dnf'
 
-- name: download hashicorp gpg key file from keybase
-  get_url:
-    url: https://keybase.io/hashicorp/key.asc
-    dest: "{{ vagrant_download_dir }}/hashicorp.asc"
-    validate_certs: "{{ vagrant_validate_certs }}"
+- block:
+    - name: download hashicorp gpg key file from keybase
+      get_url:
+        url: https://keybase.io/hashicorp/key.asc
+        dest: "{{ vagrant_download_dir }}/hashicorp.asc"
+        validate_certs: "{{ vagrant_validate_certs }}"
 
-- name: install gnupg package
-  become: yes
-  package:
-    name: gnupg
-    state: present
-  when: vagrant_verify_checksum_signature
+    - name: install gnupg package
+      become: yes
+      package:
+        name: gnupg
+        state: present
 
-- name: import hashicorp gpg key
-  command: gpg --import "{{ vagrant_download_dir }}/hashicorp.asc"
-  changed_when: no
+    - name: import hashicorp gpg key
+      command: gpg --import "{{ vagrant_download_dir }}/hashicorp.asc"
+      changed_when: no
+
+    - name: download vagrant checksum signature file
+      get_url:
+        url: "{{ vagrant_signature_url }}"
+        dest: "{{ vagrant_download_dir }}/{{ vagrant_signature_file }}"
+        validate_certs: "{{ vagrant_validate_certs }}"
   when: vagrant_verify_checksum_signature
 
 - name: download vagrant checksum file
@@ -30,13 +36,6 @@
     url: "{{ vagrant_checksum_url }}"
     dest: "{{ vagrant_download_dir }}/{{ vagrant_checksum_file }}"
     validate_certs: "{{ vagrant_validate_certs }}"
-
-- name: download vagrant checksum signature file
-  get_url:
-    url: "{{ vagrant_signature_url }}"
-    dest: "{{ vagrant_download_dir }}/{{ vagrant_signature_file }}"
-    validate_certs: "{{ vagrant_validate_certs }}"
-  when: vagrant_verify_checksum_signature
 
 - name: verify checksum file
   command: gpg --batch --verify {{ vagrant_download_dir }}/{{ vagrant_signature_file }} {{ vagrant_download_dir }}/{{ vagrant_checksum_file }}
