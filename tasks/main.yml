@@ -40,7 +40,10 @@
 - name: verify checksum file
   command: gpg --batch --verify {{ vagrant_download_dir }}/{{ vagrant_signature_file }} {{ vagrant_download_dir }}/{{ vagrant_checksum_file }}
   changed_when: no
+  register: gpg_check
   when: vagrant_verify_checksum_signature
+  failed_when: gpg_check.rc == 1
+  tags: gpg_check
 
 - name: get checksum of vagrant package
   command:  grep {{ vagrant_package }} {{ vagrant_download_dir }}/{{ vagrant_checksum_file }}
