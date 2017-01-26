@@ -1,0 +1,16 @@
+---
+# defaults file for kostyrevaa.vagrant
+vagrant_version: 1.9.1
+vagrant_download_dir: /tmp
+
+vagrant_validate_certs: true
+
+vagrant_checksum_file: "vagrant_{{ vagrant_version }}_SHA256SUMS"
+vagrant_checksum_url: "https://releases.hashicorp.com/vagrant/{{ vagrant_version }}/{{ vagrant_checksum_file }}"
+
+vagrant_verify_checksum_signature: true
+vagrant_signature_file: "{{ vagrant_checksum_file }}.sig"
+vagrant_signature_url: "https://releases.hashicorp.com/vagrant/{{ vagrant_version }}/{{ vagrant_signature_file }}"
+
+vagrant_package: "vagrant_{{ vagrant_version }}_{{ ansible_architecture }}.{{ 'deb' if ansible_os_family == 'Debian' else 'rpm' }}"
+vagrant_package_url: https://releases.hashicorp.com/vagrant/{{ vagrant_version }}/{{ vagrant_package }}

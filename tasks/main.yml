@@ -1,0 +1,70 @@
+---
+# tasks file for kostyrevaa.vagrant
+
+- name: install python2-dnf for ansible
+  become: yes
+  raw: dnf -y install python2-dnf
+  changed_when: False
+  when: ansible_pkg_mgr == 'dnf'
+
+- name: download hashicorp gpg key file from keybase
+  get_url:
+    url: https://keybase.io/hashicorp/key.asc
+    dest: "{{ vagrant_download_dir }}/hashicorp.asc"
+    validate_certs: "{{ vagrant_validate_certs }}"
+
+- name: install gnupg package
+  become: yes
+  package:
+    name: gnupg
+    state: present
+  when: vagrant_verify_checksum_signature
+
+- name: import hashicorp gpg key
+  command: gpg --import "{{ vagrant_download_dir }}/hashicorp.asc"
+  changed_when: no
+  when: vagrant_verify_checksum_signature
+
+- name: download vagrant checksum file
+  get_url:
+    url: "{{ vagrant_checksum_url }}"
+    dest: "{{ vagrant_download_dir }}/{{ vagrant_checksum_file }}"
+    validate_certs: "{{ vagrant_validate_certs }}"
+
+- name: download vagrant checksum signature file
+  get_url:
+    url: "{{ vagrant_signature_url }}"
+    dest: "{{ vagrant_download_dir }}/{{ vagrant_signature_file }}"
+    validate_certs: "{{ vagrant_validate_certs }}"
+  when: vagrant_verify_checksum_signature
+
+- name: verify checksum file
+  command: gpg --batch --verify {{ vagrant_download_dir }}/{{ vagrant_signature_file }} {{ vagrant_download_dir }}/{{ vagrant_checksum_file }}
+  changed_when: no
+  when: vagrant_verify_checksum_signature
+
+- name: get checksum of vagrant package
+  command:  grep {{ vagrant_package }} {{ vagrant_download_dir }}/{{ vagrant_checksum_file }}
+  register: vagrant_checksum
+  changed_when: no
+
+- name: download vagrant package
+  get_url:
+    url: "{{ vagrant_package_url }}"
+    dest: "{{ vagrant_download_dir }}/{{ vagrant_package }}"
+    checksum: "sha256:{{ vagrant_checksum.stdout.split(' ') | first }}"
+    validate_certs: "{{ vagrant_validate_certs }}"
+
+- name: install vagrant rpm package
+  become: yes
+  package:
+    name: "{{ vagrant_download_dir }}/{{ vagrant_package }}"
+    state: present
+  when: not ansible_os_family == 'Debian'
+
+- name: install vagrant deb package
+  become: yes
+  apt:
+    deb: "{{ vagrant_download_dir }}/{{ vagrant_package }}"
+    state: present
+  when: ansible_os_family == 'Debian'
