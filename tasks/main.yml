@@ -29,6 +29,7 @@
         url: "{{ vagrant_signature_url }}"
         dest: "{{ vagrant_download_dir }}/{{ vagrant_signature_file }}"
         validate_certs: "{{ vagrant_validate_certs }}"
+        force: yes
   when: vagrant_verify_checksum_signature
 
 - name: download vagrant checksum file
