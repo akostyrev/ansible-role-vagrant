@@ -1,6 +1,6 @@
 ---
 # defaults file for kostyrevaa.vagrant
-vagrant_version: 1.9.1
+vagrant_version: 1.9.3
 vagrant_download_dir: /tmp
 
 vagrant_validate_certs: true
