@@ -24,8 +24,14 @@ Example Playbook
   roles:
     - role: akostyrev.vagrant
       vagrant_validate_certs: "{{ false if ansible_virtualization_type == 'docker' else true }}"
+```
 
+Install From Github
+-------------------
 
+```
+git clone https://github.com/akostyrev/ansible-role-vagrant.git akostyrev.vagrant
+cd akostyrev.vagrant && make install
 ```
 
 License
