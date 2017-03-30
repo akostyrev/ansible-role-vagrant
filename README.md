@@ -1,6 +1,6 @@
 # vagrant
 
-[![Build Status](https://travis-ci.org/kostyrevaa/ansible-role-vagrant.svg?branch=master)](https://travis-ci.org/kostyrevaa/ansible-role-vagrant)
+[![Build Status](https://travis-ci.org/akostyrev/ansible-role-vagrant.svg?branch=master)](https://travis-ci.org/akostyrev/ansible-role-vagrant)
 
 Installs vagrant
 
@@ -22,7 +22,7 @@ Example Playbook
 ---
 - hosts: all
   roles:
-    - role: kostyrevaa.vagrant
+    - role: akostyrev.vagrant
       vagrant_validate_certs: "{{ false if ansible_virtualization_type == 'docker' else true }}"
 
 

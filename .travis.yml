@@ -16,7 +16,7 @@ install:
 - pip install molecule
 
 script:
-- cd ../ && mv ansible-role-vagrant kostyrevaa.vagrant && cd kostyrevaa.vagrant
+- cd ../ && mv ansible-role-vagrant akostyrev.vagrant && cd akostyrev.vagrant
 - molecule test
 
 notifications:
